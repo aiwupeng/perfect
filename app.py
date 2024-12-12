@@ -2,6 +2,7 @@
 import streamlit as st
 import pandas as pd
 import akshare as ak
+import os
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
@@ -13,11 +14,10 @@ plt.rcParams['axes.unicode_minus'] = False
 
 # 数据加载函数
 def load_data():
-    file = st.file_uploader("上传数据文件", type=["xlsx"])
-    if file is not None:
-        df = pd.read_excel(file)
-        return df
-    return pd.DataFrame()
+    #mainDir = st.secrets["MAIN_DIR"]  # 确保在Streamlit的秘密中设置了MAIN_DIR
+    filePath = os.path.join("data/16_23_full.xlsx")
+    df = pd.read_excel(filePath)
+    return df
 
 
 # 评分逻辑提取成函数
