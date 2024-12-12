@@ -11,7 +11,7 @@ if __name__ == "__main__":
     sys.argv = [
         "streamlit",
         "run",
-        resolve_path("perfect.py"),  # 替换为你的Streamlit应用的主文件
+        resolve_path("app.py"),  # 替换为你的Streamlit应用的主文件
         "--global.developmentMode=false",
     ]
     sys.exit(stcli.main())
