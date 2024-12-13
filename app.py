@@ -57,8 +57,8 @@ def scoring_system(df, stock_cd):
         # 使用评分函数
         filtered_data['成长'] = filtered_data['Growth'].apply(score_growth)
         filtered_data['竞争'] = filtered_data['Xgross'].apply(score_gross)
-        filtered_data['核心利润率'] = filtered_data['Xcore_sales'].apply(score_core)
-        filtered_data['获现能力'] = filtered_data['Cfo_core'].apply(score_cfo)
+        filtered_data['潜力'] = filtered_data['Xcore_sales'].apply(score_core)
+        filtered_data['获现'] = filtered_data['Cfo_core'].apply(score_cfo)
         filtered_data['风险'] = filtered_data['Finance_debt'].apply(score_finance_debt)
         filtered_data['造血'] = filtered_data['H_ability'].apply(score_ability)
         filtered_data['研发'] = filtered_data['Xrd'].apply(score_rd)
