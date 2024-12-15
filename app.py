@@ -71,8 +71,8 @@ def scoring_system(df, stock_cd):
     return pd.DataFrame()
 
 
-# 可视化函数
 def visualization(stkcd_data):
+    # 可视化逻辑...
     charts = [
         ('Other_income', '政府补贴'),
         ('Growth', '成长能力'),
@@ -99,6 +99,7 @@ def visualization(stkcd_data):
             ax.set_xlabel('年份')
             ax.set_ylabel('金额/百分比')
             ax.legend()
+            # 绘图逻辑...
             st.pyplot(fig)
 
     
