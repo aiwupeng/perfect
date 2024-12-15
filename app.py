@@ -92,13 +92,16 @@ def visualization(stkcd_data):
         with cols[i % 3]:
             fig, ax = plt.subplots()
             ax.plot(stkcd_data['Year'], stkcd_data[col], label=col, color='red', linewidth=3)
+            if f'{col}_mean' in stkcd_data.columns:
+                ax.plot(stkcd_data['Year'], stkcd_data[f'{col}_mean'], label=f'{col}中值', linestyle='--', color='green',
+                        linewidth=3)
             ax.set_title(title)
             ax.set_xlabel('年份')
             ax.set_ylabel('金额/百分比')
             ax.legend()
             st.pyplot(fig)
 
-
+    
 # 资金流向查询函数
 def fund_flow_query(stock_code, market):
     try:
