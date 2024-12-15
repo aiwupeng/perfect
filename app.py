@@ -116,32 +116,8 @@ def get_top_ten_free_holders(stock_code, date):
 def main():
     st.title("彭博士公司评分系统")
     df = load_data()
-
-    user_input = st.text_input("请输入公司代码或公司名称:", '')
-    
-    if user_input:
-        # 尝试匹配公司代码
-        if user_input.isdigit():  # 如果是纯数字，认为是公司代码
-            stock_cd = int(user_input)  # 将用户输入的公司代码转换为整数
-            # 转换df['Stkcd']为数字格式，确保没有非数字数据
-            try:
-                df['Stkcd'] = df['Stkcd'].astype(str)  # 确保'公司代码'是字符串
-                stkcd_data = df[df['Stkcd'] == user_input]  # 比较字符串，而不是整数
-            except ValueError as e:
-                st.error(f"公司代码转换错误: {e}")
-                stkcd_data = pd.DataFrame()  # 如果转换失败，则返回空DataFrame
-        else:  # 如果是字符串，认为是公司名称
-            stkcd_data = df[df['Name'].str.contains(user_input, case=False)]
-        
-        if stkcd_data.empty:
-            st.write("未找到匹配的公司")
-        else:
-            # 显示匹配的公司信息
-            st.write(f"找到的公司：")
-            st.write(stkcd_data)
-
-
-    
+    stock_cd = st.text_input("请输入公司代码:"'')
+     
     if st.button('计算评分'):
         scored_data = scoring_system(df, stock_cd)
         if not scored_data.empty:
