@@ -116,7 +116,7 @@ def get_top_ten_free_holders(stock_code, date):
 def main():
     st.title("彭博士公司评分系统")
     df = load_data()
-    stock_cd = st.text_input("请输入公司代码:"'')
+    stock_cd = st.text_input("请输入公司代码:",'')
      
     if st.button('计算评分'):
         scored_data = scoring_system(df, stock_cd)
