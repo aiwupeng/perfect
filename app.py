@@ -128,11 +128,11 @@ def main():
     stkcd_data = df[df['Stkcd'].astype(int) == int(stock_cd)]
     if st.button('生成图表'):
         visualization(stkcd_data)
-    st.title("竞争地位:")
+    st.title("竞争地位分析:")
     columns_to_display1 = stkcd_data[
             ['Name', 'IndName', 'Year', 'Gross_profit', 'Gross', 'P_RD', 'Oper_revenue', 'Growth']]
     st.dataframe(columns_to_display1)
-    st.title("暴雷分析:")
+    st.title("业绩暴雷分析:")
     columns_to_display2 = stkcd_data[
             ['Name', 'IndName', 'Year', 'Non_current_asset_sum', 'Receivable_sales', 'P_other_receivable', 'Inventory', 'Core_income',
              'Other_income', 'Non_income', 'Exp_income', 'Admin_income', 'Finance_income']]
@@ -143,7 +143,7 @@ def main():
              'Operating_assets_tat', 'Operating_assets_roa', 'P_finance_assets', 'Non_income', 'Finance_assets_roa', 'G_inventory',
              'DFix_assets']]
     st.dataframe(columns_to_display3)
-    st.title("现金流分析:")
+    st.title("现金流量分析:")
     columns_to_display4 = stkcd_data[
             ['Name', 'IndName', 'Year', 'Cfo_core', 'Cfo', 'Buy_cash', 'Invest_cash', 'Free_cash',
              'Excess_cash', 'Finance_cash_in', 'Oper_revenue']]
