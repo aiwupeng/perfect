@@ -15,37 +15,50 @@ def load_data():
     filePath = os.path.join("data/16_23_full.xlsx")
     df = pd.read_excel(filePath)
     return df
+
+# 评分逻辑提取成函数
+def score_growth(growth):
+    return 12 + min(round((growth - 0.2) / 0.05), 3) if growth >= 0.2 else 10 + max(round((growth - 0.2) / 0.05), -10)
+
+def score_gross(gross):
+    return 5 + min(round(gross / 0.1), 5) if gross >= 0 else 5 + max(round(gross / 0.1), -5)
+
+def score_core(core_sales):
+    return 5 + min(round(core_sales / 0.1), 5) if core_sales >= 0 else 5 + max(round(core_sales / 0.1), -5)
+
+def score_cfo(cfo):
+    return 10 + min(round((cfo - 1) / 0.1), 5) if cfo >= 1 else 10 + max(round((cfo - 1) / 0.1), -10)
+
+def score_finance_debt(debt):
+    return 7 + min(round((0.3 - debt) / 0.1), 3) if debt <= 0.3 else 5 + max(round((0.3 - debt) / 0.1), -5)
+
+def score_ability(ability):
+    return 5 + min(round((ability - 0.5) / 0.05), 5) if ability >= 0.5 else 5 + max(round((ability - 0.5) / 0.05), -5)
+
+def score_rd(rd):
+    return 5 + min(round(rd / 0.05), 5) if rd >= 0 else 5 + max(round(rd / 0.05), -5)
+
+def score_tat(tat):
+    return 5 + min(round(tat / 0.1), 5) if tat >= 0 else 5 + max(round(tat / 0.1), -5)
+
+def score_roa(roa):
+    return 5 + min(round(roa / 0.1), 5) if roa >= 0 else 5 + max(round(roa / 0.1), -5)
+
+
 def scoring_system(df, stock_cd):
     filtered_data = df[df['Stkcd'].astype(int) == int(stock_cd)]
     if not filtered_data.empty:
-        # 评分逻辑...
-        # 营业收入增长率打分
-        filtered_data['成长'] = filtered_data['Growth'].apply(
-                lambda y: 12 + min(round((y - 0.2) / 0.05), 3) if y >= 0.2 else 10 + max(round((y - 0.2) / 0.05), -10))
-            # 毛利率打分
-        filtered_data['竞争'] = filtered_data['Xgross'].apply(
-                lambda y: 5 + min(round(y / 0.1), 5) if y >= 0 else 5 + max(round(y / 0.1), -5))
-            # 核心利润率打分
-        filtered_data['潜力'] = filtered_data['Xcore_sales'].apply(
-                lambda y: 5 + min(round(y / 0.1), 5) if y >= 0 else 5 + max(round(y / 0.1), -5))
-            # 获现率打分
-        filtered_data['获现'] = filtered_data['Cfo_core'].apply(
-                lambda y: 10 + min(round((y - 1) / 0.1), 5) if y >= 1 else 10 + max(round((y - 1) / 0.1), -10))
-            # 有息负债率打分
-        filtered_data['风险'] = filtered_data['Finance_debt'].apply(
-                lambda y: 7 + min(round((0.3 - y) / 0.1), 3) if y <= 0.3 else 5 + max(round((0.3 - y) / 0.1), -5))
-            # 造血打分
-        filtered_data['造血'] = filtered_data['H_ability'].apply(
-                lambda y: 5 + min(round((y - 0.5) / 0.05), 5) if y >= 0.5 else 5 + max(round((y - 0.5) / 0.05), -5))
-            # 研发打分
-        filtered_data['研发'] = filtered_data['Xrd'].apply(
-                lambda y: 5 + min(round(y / 0.05), 5) if y >= 0 else 5 + max(round(y / 0.05), -5))
-            # 经营资产周转率打分
-        filtered_data['周转率'] = filtered_data['Xtat'].apply(
-                lambda y: 5 + min(round(y / 0.1), 5) if y >= 0 else 5 + max(round(y / 0.1), -5))
-            # 经营资产报酬率打分
-        filtered_data['报酬率'] = filtered_data['XOroa'].apply(
-                lambda y: 5 + min(round(y / 0.1), 5) if y >= 0 else 5 + max(round(y / 0.1), -5))
+# 使用评分函数
+        filtered_data['成长'] = filtered_data['Growth'].apply(score_growth)
+        filtered_data['竞争'] = filtered_data['Xgross'].apply(score_gross)
+        filtered_data['潜力'] = filtered_data['Xcore_sales'].apply(score_core)
+        filtered_data['获现'] = filtered_data['Cfo_core'].apply(score_cfo)
+        filtered_data['风险'] = filtered_data['Finance_debt'].apply(score_finance_debt)
+        filtered_data['造血'] = filtered_data['H_ability'].apply(score_ability)
+        filtered_data['研发'] = filtered_data['Xrd'].apply(score_rd)
+        filtered_data['周转率'] = filtered_data['Xtat'].apply(score_tat)
+        filtered_data['报酬率'] = filtered_data['XOroa'].apply(score_roa)
+
             # 计算总得分
         filtered_data['总分'] = filtered_data[
                 ['成长', '竞争', '潜力', '获现', '风险', '造血', '研发', '周转率', '报酬率']].sum(axis=1)
@@ -116,16 +129,8 @@ def get_top_ten_free_holders(stock_code, date):
 def main():
     st.title("彭博士公司评分系统")
     df = load_data()
-input_value = st.text_input("请输入公司名称或公司代码:")
-
-# 判断输入值的类型
-if input_value.isdigit():
-    # 输入是公司代码（假设公司代码为数字）
-    st.write(f"你输入的公司代码是: {input_value}")
-else:
-    # 输入是公司名称（假设公司名称为字母或中文）
-    st.write(f"你输入的公司名称是: {input_value}")
-    
+    stock_cd = st.text_input("公司代码:", '002139')
+  
     if st.button('计算评分'):
         scored_data = scoring_system(df, stock_cd)
         if not scored_data.empty:
