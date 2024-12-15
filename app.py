@@ -122,7 +122,7 @@ def main():
     if user_input:
         # 尝试匹配公司代码
         if user_input.isdigit():  # 如果是纯数字，认为是公司代码
-            company_data = df[df['Stkcd'] == user_input]
+            company_data = df[df['stock_cd'] == user_input]
         else:  # 如果是字符串，认为是公司名称
             company_data = df[df['Name'].str.contains(user_input, case=False)]
         
