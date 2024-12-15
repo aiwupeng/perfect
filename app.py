@@ -131,7 +131,7 @@ def main():
                 st.error(f"公司代码转换错误: {e}")
                 stkcd_data = pd.DataFrame()  # 如果转换失败，则返回空DataFrame
         else:  # 如果是字符串，认为是公司名称
-            stkcd_data = df[df['CompanyName'].str.contains(user_input, case=False)]
+            stkcd_data = df[df['Name'].str.contains(user_input, case=False)]
         
         if stkcd_data.empty:
             st.write("未找到匹配的公司")
