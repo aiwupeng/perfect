@@ -2,74 +2,58 @@
 import streamlit as st
 import pandas as pd
 import akshare as ak
-import os
 import matplotlib.pyplot as plt
+import os
 from matplotlib.font_manager import FontProperties
 
-# 设置全局中文字体
-font_path = "path_to_font/SimHei.ttf"  # 请确保替换为实际的字体路径
-font_prop = FontProperties(fname=font_path)
+# 设置全局中文字体和负号显示
+plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
-
-
 
 def load_data():
     #mainDir = st.secrets["MAIN_DIR"]  # 确保在Streamlit的秘密中设置了MAIN_DIR
     filePath = os.path.join("data/16_23_full.xlsx")
     df = pd.read_excel(filePath)
     return df
-
-
-
-# 评分逻辑提取成函数
-def score_growth(growth):
-    return 12 + min(round((growth - 0.2) / 0.05), 3) if growth >= 0.2 else 10 + max(round((growth - 0.2) / 0.05), -10)
-
-def score_gross(gross):
-    return 5 + min(round(gross / 0.1), 5) if gross >= 0 else 5 + max(round(gross / 0.1), -5)
-
-def score_core(core_sales):
-    return 5 + min(round(core_sales / 0.1), 5) if core_sales >= 0 else 5 + max(round(core_sales / 0.1), -5)
-
-def score_cfo(cfo):
-    return 10 + min(round((cfo - 1) / 0.1), 5) if cfo >= 1 else 10 + max(round((cfo - 1) / 0.1), -10)
-
-def score_finance_debt(debt):
-    return 7 + min(round((0.3 - debt) / 0.1), 3) if debt <= 0.3 else 5 + max(round((0.3 - debt) / 0.1), -5)
-
-def score_ability(ability):
-    return 5 + min(round((ability - 0.5) / 0.05), 5) if ability >= 0.5 else 5 + max(round((ability - 0.5) / 0.05), -5)
-
-def score_rd(rd):
-    return 5 + min(round(rd / 0.05), 5) if rd >= 0 else 5 + max(round(rd / 0.05), -5)
-
-def score_tat(tat):
-    return 5 + min(round(tat / 0.1), 5) if tat >= 0 else 5 + max(round(tat / 0.1), -5)
-
-def score_roa(roa):
-    return 5 + min(round(roa / 0.1), 5) if roa >= 0 else 5 + max(round(roa / 0.1), -5)
-
-
-        # 计算公司评分
 def scoring_system(df, stock_cd):
     filtered_data = df[df['Stkcd'].astype(int) == int(stock_cd)]
     if not filtered_data.empty:
-        # 使用评分函数
-        filtered_data['成长'] = filtered_data['Growth'].apply(score_growth)
-        filtered_data['竞争'] = filtered_data['Xgross'].apply(score_gross)
-        filtered_data['潜力'] = filtered_data['Xcore_sales'].apply(score_core)
-        filtered_data['获现'] = filtered_data['Cfo_core'].apply(score_cfo)
-        filtered_data['风险'] = filtered_data['Finance_debt'].apply(score_finance_debt)
-        filtered_data['造血'] = filtered_data['H_ability'].apply(score_ability)
-        filtered_data['研发'] = filtered_data['Xrd'].apply(score_rd)
-        filtered_data['周转率'] = filtered_data['Xtat'].apply(score_tat)
-        filtered_data['报酬率'] = filtered_data['XOroa'].apply(score_roa)
-
-        filtered_data['总分'] = filtered_data[['成长', '竞争', '潜力', '获现', '风险', '造血', '研发', '周转率', '报酬率']].sum(axis=1)
-        return filtered_data[['Stkcd', 'Name', 'Year', 'IndName', 'Yret', '成长', '竞争', '潜力', '获现', '风险', '造血', '研发', '周转率',
-         '报酬率', '总分']]
-    return pd.DataFrame()
-
+        # 评分逻辑...
+        # 营业收入增长率打分
+        filtered_data['成长'] = filtered_data['Growth'].apply(
+                lambda y: 12 + min(round((y - 0.2) / 0.05), 3) if y >= 0.2 else 10 + max(round((y - 0.2) / 0.05), -10))
+            # 毛利率打分
+        filtered_data['竞争'] = filtered_data['Xgross'].apply(
+                lambda y: 5 + min(round(y / 0.1), 5) if y >= 0 else 5 + max(round(y / 0.1), -5))
+            # 核心利润率打分
+        filtered_data['潜力'] = filtered_data['Xcore_sales'].apply(
+                lambda y: 5 + min(round(y / 0.1), 5) if y >= 0 else 5 + max(round(y / 0.1), -5))
+            # 获现率打分
+        filtered_data['获现'] = filtered_data['Cfo_core'].apply(
+                lambda y: 10 + min(round((y - 1) / 0.1), 5) if y >= 1 else 10 + max(round((y - 1) / 0.1), -10))
+            # 有息负债率打分
+        filtered_data['风险'] = filtered_data['Finance_debt'].apply(
+                lambda y: 7 + min(round((0.3 - y) / 0.1), 3) if y <= 0.3 else 5 + max(round((0.3 - y) / 0.1), -5))
+            # 造血打分
+        filtered_data['造血'] = filtered_data['H_ability'].apply(
+                lambda y: 5 + min(round((y - 0.5) / 0.05), 5) if y >= 0.5 else 5 + max(round((y - 0.5) / 0.05), -5))
+            # 研发打分
+        filtered_data['研发'] = filtered_data['Xrd'].apply(
+                lambda y: 5 + min(round(y / 0.05), 5) if y >= 0 else 5 + max(round(y / 0.05), -5))
+            # 经营资产周转率打分
+        filtered_data['周转率'] = filtered_data['Xtat'].apply(
+                lambda y: 5 + min(round(y / 0.1), 5) if y >= 0 else 5 + max(round(y / 0.1), -5))
+            # 经营资产报酬率打分
+        filtered_data['报酬率'] = filtered_data['XOroa'].apply(
+                lambda y: 5 + min(round(y / 0.1), 5) if y >= 0 else 5 + max(round(y / 0.1), -5))
+            # 计算总得分
+        filtered_data['总分'] = filtered_data[
+                ['成长', '竞争', '潜力', '获现', '风险', '造血', '研发', '周转率', '报酬率']].sum(axis=1)
+        return filtered_data[
+                ['Stkcd', 'Name', 'Year', 'IndName','Yret', '成长', '竞争', '潜力', '获现', '风险', '造血', '研发', '周转率',
+                 '报酬率', '总分']]
+    else:
+        return pd.DataFrame()
 
 def visualization(stkcd_data):
     # 可视化逻辑...
@@ -101,9 +85,6 @@ def visualization(stkcd_data):
             ax.legend()
             # 绘图逻辑...
             st.pyplot(fig)
-
-    
-# 资金流向查询函数
 def fund_flow_query(stock_code, market):
     try:
         stock_individual_fund_flow_df = ak.stock_individual_fund_flow(stock=stock_code, market=market)
@@ -111,9 +92,6 @@ def fund_flow_query(stock_code, market):
     except Exception as e:
         st.error(f'查询失败：{e}')
         return None
-
-
-# 十大流通股东持仓情况查询函数
 def get_top_ten_free_holders(stock_code, date):
     """
     获取指定股票和日期的十大流通股东持仓情况。
@@ -138,12 +116,6 @@ def get_top_ten_free_holders(stock_code, date):
 def main():
     st.title("彭博士公司评分系统")
     df = load_data()
-
-    if df.empty:
-        st.warning("请上传数据文件")
-        return
-
-    # 公司评分
     stock_cd = st.text_input("公司代码:", '002139')
     if st.button('计算评分'):
         scored_data = scoring_system(df, stock_cd)
@@ -152,39 +124,29 @@ def main():
             st.dataframe(scored_data)
         else:
             st.error("没有找到对应的公司数据。")
-
-    # 图表生成
     stkcd_data = df[df['Stkcd'].astype(int) == int(stock_cd)]
     if st.button('生成图表'):
         visualization(stkcd_data)
-
-    # 竞争地位
     st.title("竞争地位:")
     columns_to_display1 = stkcd_data[
-        ['Name', 'IndName', 'Year', 'Gross_profit', 'Gross', 'P_RD', 'Oper_revenue', 'Growth']]
+            ['Name', 'IndName', 'Year', 'Gross_profit', 'Gross', 'P_RD', 'Oper_revenue', 'Growth']]
     st.dataframe(columns_to_display1)
-
-    # 暴雷分析
     st.title("暴雷分析:")
     columns_to_display2 = stkcd_data[
-        ['Name', 'IndName', 'Year', 'Non_current_asset_sum', 'Receivable_sales', 'P_other_receivable', 'Inventory',
-         'Core_income']]
+            ['Name', 'IndName', 'Year', 'Non_current_asset_sum', 'Receivable_sales', 'P_other_receivable', 'Inventory', 'Core_income',
+             'Other_income', 'Non_income', 'Exp_income', 'Admin_income', 'Finance_income']]
     st.dataframe(columns_to_display2)
-
-    # 资产利润脱节分析
     st.title("资产利润脱节分析:")
     columns_to_display3 = stkcd_data[
-        ['Name', 'IndName', 'Year', 'P_operating_assets', 'Oper_revenue', 'Core_income', 'Core_sales', 'Cfo',
-         'Cfo_core']]
+            ['Name', 'IndName', 'Year', 'P_operating_assets', 'Oper_revenue', 'Core_income', 'Core_sales', 'Cfo', 'Cfo_core',
+             'Operating_assets_tat', 'Operating_assets_roa', 'P_finance_assets', 'Non_income', 'Finance_assets_roa', 'G_inventory',
+             'DFix_assets']]
     st.dataframe(columns_to_display3)
-
-    # 现金流分析
     st.title("现金流分析:")
     columns_to_display4 = stkcd_data[
-        ['Name', 'IndName', 'Year', 'Cfo_core', 'Cfo', 'Buy_cash', 'Invest_cash', 'Free_cash']]
+            ['Name', 'IndName', 'Year', 'Cfo_core', 'Cfo', 'Buy_cash', 'Invest_cash', 'Free_cash',
+             'Excess_cash', 'Finance_cash_in', 'Oper_revenue']]
     st.dataframe(columns_to_display4)
-
-    # 个股资金流向数据查询
     st.title('个股资金流向数据查询')
     stock_code = st.text_input('输入股票代码', '002139')
     market_type = st.selectbox('选择市场类型', ('上海证券交易所', '深圳证券交易所'), index=0)
@@ -194,22 +156,22 @@ def main():
         if fund_flow_df is not None:
             st.write('查询结果：')
             st.dataframe(fund_flow_df)
+            # 页面标题
+            st.title('个股十大流通股东持仓情况')
+            # 创建一个文本输入框，让用户输入股票代码
+            stock_code = st.text_input('请输入股票代码', '002139')  # 以贵州茅台为例，默认输入600519
+            # 创建一个日期选择器，让用户选择财报发布季度最后日
+            date = st.date_input('请选择财报发布季度最后日', value=None)
+            # 检查输入是否有效，并获取数据
+            if st.button('获取数据'):
+                if stock_code and date:
+                    # 调用函数获取数据
+                    result_df = get_top_ten_free_holders(stock_code, date.strftime('%Y%m%d'))
+                    # 展示数据
+                    st.write("个股十大流通股东持仓情况：")
+                    st.dataframe(result_df)
+                else:
+                    st.error("请输入有效的股票代码和日期")
 
-    # 个股十大流通股东持仓情况
-    st.title('个股十大流通股东持仓情况')
-    stock_code = st.text_input('请输入股票代码', '002139')  # 默认输入股票代码
-    date = st.date_input('请选择财报发布季度最后日', value=None)
-    if st.button('获取数据'):
-        if stock_code and date:
-            result_df = get_top_ten_free_holders(stock_code, date.strftime('%Y%m%d'))
-            st.write("个股十大流通股东持仓情况：")
-            st.dataframe(result_df)
-        else:
-            st.error("请输入有效的股票代码和日期")
-
-
-if __name__ == "__main__":
-    main()
-
-
-
+        if __name__ == "__main__":
+            main()
