@@ -122,16 +122,22 @@ def main():
     if user_input:
         # 尝试匹配公司代码
         if user_input.isdigit():  # 如果是纯数字，认为是公司代码
-            company_data = df[df['stock_cd'] == user_input]
+            try:
+                # 将用户输入的公司代码与数据中的公司代码进行匹配
+                stock_cd = int(user_input)  # 转换为整数
+                stkcd_data = df[df['Stkcd'].astype(int) == stock_cd]
+            except ValueError as e:
+                st.error(f"公司代码转换错误: {e}")
+                stkcd_data = pd.DataFrame()  # 如果转换失败，则返回空DataFrame
         else:  # 如果是字符串，认为是公司名称
-            company_data = df[df['Name'].str.contains(user_input, case=False)]
+            stkcd_data = df[df['CompanyName'].str.contains(user_input, case=False)]
         
-        if company_data.empty:
+        if stkcd_data.empty:
             st.write("未找到匹配的公司")
         else:
             # 显示匹配的公司信息
             st.write(f"找到的公司：")
-            st.write(company_data)
+            st.write(stkcd_data)
 
 
     
