@@ -12,7 +12,7 @@ plt.rcParams['axes.unicode_minus'] = False
 
 def load_data():
     #mainDir = st.secrets["MAIN_DIR"]  # 确保在Streamlit的秘密中设置了MAIN_DIR
-    filePath = os.path.join("data/16_23_full.xlsx")
+    filePath = os.path.join("data/20_24_niu.xlsx")
     df = pd.read_excel(filePath)
     return df
 def scoring_system(df, stock_cd):
